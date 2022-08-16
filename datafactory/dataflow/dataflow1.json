@@ -50,7 +50,22 @@
 				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> dperson"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          BusinessEntityID,",
+				"          PersonType,",
+				"          NameStyle,",
+				"          Title,",
+				"          FirstName,",
+				"          MiddleName,",
+				"          LastName,",
+				"          Suffix,",
+				"          EmailPromotion,",
+				"          AdditionalContactInfo,",
+				"          Demographics,",
+				"          rowguid,",
+				"          ModifiedDate",
+				"     )) ~> dperson"
 			]
 		}
 	}

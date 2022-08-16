@@ -11,6 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "PersonOutput.csv",
+				"folderPath": "Output",
 				"container": "newcontainer"
 			},
 			"columnDelimiter": ",",
