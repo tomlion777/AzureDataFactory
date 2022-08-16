@@ -1,0 +1,57 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AW_Person",
+						"type": "DatasetReference"
+					},
+					"name": "Person"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "PersonOutput",
+						"type": "DatasetReference"
+					},
+					"name": "dperson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          BusinessEntityID as integer,",
+				"          PersonType as string,",
+				"          NameStyle as boolean,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          EmailPromotion as integer,",
+				"          AdditionalContactInfo as string,",
+				"          Demographics as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Person",
+				"Person filter(PersonType=='EM') ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> dperson"
+			]
+		}
+	}
+}
