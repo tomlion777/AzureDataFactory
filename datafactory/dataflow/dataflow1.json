@@ -18,12 +18,12 @@
 						"referenceName": "PersonOutput",
 						"type": "DatasetReference"
 					},
-					"name": "dperson"
+					"name": "PersonOutput"
 				}
 			],
 			"transformations": [
 				{
-					"name": "filter1"
+					"name": "EmployeeFilter"
 				}
 			],
 			"scriptLines": [
@@ -46,9 +46,14 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> Person",
-				"Person filter(PersonType=='EM') ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"Person filter(PersonType=='EM') ~> EmployeeFilter",
+				"EmployeeFilter sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
@@ -65,7 +70,7 @@
 				"          Demographics,",
 				"          rowguid,",
 				"          ModifiedDate",
-				"     )) ~> dperson"
+				"     )) ~> PersonOutput"
 			]
 		}
 	}
