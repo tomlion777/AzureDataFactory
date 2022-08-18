@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "PersonPersonEmployeeFilter",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
