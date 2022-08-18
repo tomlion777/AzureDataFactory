@@ -189,8 +189,92 @@
 					],
 					"transformations": [
 						{
-							"name": "EmployeeFilter"
+							"name": "BusinessEntityIdSorter"
 						},
+						{
+							"name": "FilterEmployees"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          BusinessEntityID as integer,",
+						"          PersonType as string,",
+						"          NameStyle as boolean,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          EmailPromotion as integer,",
+						"          AdditionalContactInfo as string,",
+						"          Demographics as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> Person",
+						"FilterEmployees sort(asc(BusinessEntityID, true)) ~> BusinessEntityIdSorter",
+						"Person filter(PersonType==\"EM\") ~> FilterEmployees",
+						"BusinessEntityIdSorter sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BusinessEntityID,",
+						"          PersonType,",
+						"          NameStyle,",
+						"          Title,",
+						"          FirstName,",
+						"          MiddleName,",
+						"          LastName,",
+						"          Suffix,",
+						"          EmailPromotion,",
+						"          AdditionalContactInfo,",
+						"          Demographics,",
+						"          rowguid,",
+						"          ModifiedDate",
+						"     )) ~> PersonOutput"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AW_Person')]",
+				"[concat(variables('factoryId'), '/datasets/PersonOutput')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PersonPersonOrderAscend')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AW_Person",
+								"type": "DatasetReference"
+							},
+							"name": "Person"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "PersonOutput",
+								"type": "DatasetReference"
+							},
+							"name": "PersonOutput"
+						}
+					],
+					"transformations": [
 						{
 							"name": "BusinessEntityIdSorter"
 						}
@@ -215,8 +299,7 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> Person",
-						"Person filter(PersonType=='EM') ~> EmployeeFilter",
-						"EmployeeFilter sort(asc(BusinessEntityID, true)) ~> BusinessEntityIdSorter",
+						"Person sort(asc(BusinessEntityID, true)) ~> BusinessEntityIdSorter",
 						"BusinessEntityIdSorter sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
