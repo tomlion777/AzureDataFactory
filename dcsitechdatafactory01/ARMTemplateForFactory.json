@@ -163,7 +163,7 @@
 				"schema": [],
 				"typeProperties": {
 					"schema": "",
-					"table": "PersonOutput"
+					"table": "Person.Output"
 				}
 			},
 			"dependsOn": [
