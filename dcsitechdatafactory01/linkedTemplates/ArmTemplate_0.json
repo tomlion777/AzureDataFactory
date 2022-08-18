@@ -7,17 +7,17 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dcsitechdatafactory01"
 		},
-		"SqlServer1_connectionString": {
+		"AzureBlobStorage1_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'SqlServer1'"
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
 		"LS_adventureworks2017_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_adventureworks2017'"
 		},
-		"AzureBlobStorage1_connectionString": {
+		"SqlServer1_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+			"metadata": "Secure string for 'connectionString' of 'SqlServer1'"
 		}
 	},
 	"variables": {
@@ -25,14 +25,14 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/SqlServer1')]",
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "SqlServer",
+				"type": "AzureBlobStorage",
 				"typeProperties": {
-					"connectionString": "[parameters('SqlServer1_connectionString')]"
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -51,14 +51,14 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"name": "[concat(parameters('factoryName'), '/SqlServer1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "AzureBlobStorage",
+				"type": "SqlServer",
 				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+					"connectionString": "[parameters('SqlServer1_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -147,25 +147,19 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
+					"referenceName": "LS_adventureworks2017",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "SqlServerTable",
+				"schema": [],
 				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "PersonOutput.csv",
-						"container": "newcontainer"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
+					"schema": "",
+					"table": "PersonOutput"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_adventureworks2017')]"
 			]
 		},
 		{
@@ -190,12 +184,12 @@
 								"referenceName": "PersonOutput",
 								"type": "DatasetReference"
 							},
-							"name": "dperson"
+							"name": "PersonOutput"
 						}
 					],
 					"transformations": [
 						{
-							"name": "filter1"
+							"name": "EmployeeFilter"
 						}
 					],
 					"scriptLines": [
@@ -218,11 +212,31 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> Person",
-						"Person filter(PersonType=='EM') ~> filter1",
-						"filter1 sink(allowSchemaDrift: true,",
+						"Person filter(PersonType=='EM') ~> EmployeeFilter",
+						"EmployeeFilter sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> dperson"
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BusinessEntityID,",
+						"          PersonType,",
+						"          NameStyle,",
+						"          Title,",
+						"          FirstName,",
+						"          MiddleName,",
+						"          LastName,",
+						"          Suffix,",
+						"          EmailPromotion,",
+						"          AdditionalContactInfo,",
+						"          Demographics,",
+						"          rowguid,",
+						"          ModifiedDate",
+						"     )) ~> PersonOutput"
 					]
 				}
 			},
@@ -256,7 +270,7 @@
 								"parameters": {},
 								"datasetParameters": {
 									"Person": {},
-									"dperson": {}
+									"PersonOutput": {}
 								}
 							},
 							"staging": {},
