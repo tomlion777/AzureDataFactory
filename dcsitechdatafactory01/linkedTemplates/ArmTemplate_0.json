@@ -154,8 +154,8 @@
 				"type": "SqlServerTable",
 				"schema": [],
 				"typeProperties": {
-					"schema": "",
-					"table": "Person.Output"
+					"schema": "Person",
+					"table": "Output"
 				}
 			},
 			"dependsOn": [
