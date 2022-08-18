@@ -190,6 +190,9 @@
 					"transformations": [
 						{
 							"name": "EmployeeFilter"
+						},
+						{
+							"name": "BusinessEntityIdSorter"
 						}
 					],
 					"scriptLines": [
@@ -213,7 +216,8 @@
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> Person",
 						"Person filter(PersonType=='EM') ~> EmployeeFilter",
-						"EmployeeFilter sink(allowSchemaDrift: true,",
+						"EmployeeFilter sort(asc(BusinessEntityID, true)) ~> BusinessEntityIdSorter",
+						"BusinessEntityIdSorter sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
 						"     insertable:true,",
