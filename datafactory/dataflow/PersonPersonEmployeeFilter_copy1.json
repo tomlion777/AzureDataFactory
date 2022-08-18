@@ -1,5 +1,5 @@
 {
-	"name": "PersonPersonEmployeeFilter",
+	"name": "PersonPersonEmployeeFilter_copy1",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -24,9 +24,6 @@
 			"transformations": [
 				{
 					"name": "BusinessEntityIdSorter"
-				},
-				{
-					"name": "FilterEmployees"
 				}
 			],
 			"scriptLines": [
@@ -49,8 +46,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> Person",
-				"FilterEmployees sort(asc(BusinessEntityID, true)) ~> BusinessEntityIdSorter",
-				"Person filter(PersonType==\"EM\") ~> FilterEmployees",
+				"Person sort(asc(BusinessEntityID, true)) ~> BusinessEntityIdSorter",
 				"BusinessEntityIdSorter sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
