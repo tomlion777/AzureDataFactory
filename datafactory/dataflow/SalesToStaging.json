@@ -1,5 +1,5 @@
 {
-	"name": "Salestostg",
+	"name": "SalesToStaging",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
