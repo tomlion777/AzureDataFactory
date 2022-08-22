@@ -18,6 +18,10 @@
 		"SqlServer1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SqlServer1'"
+		},
+		"SalesPersonStaging_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SalesPersonStaging'"
 		}
 	},
 	"variables": {
@@ -59,6 +63,19 @@
 				"type": "SqlServer",
 				"typeProperties": {
 					"connectionString": "[parameters('SqlServer1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SalesPersonStaging')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('SalesPersonStaging_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -240,7 +257,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_adventureworks2017",
+					"referenceName": "SalesPersonStaging",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -252,7 +269,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_adventureworks2017')]"
+				"[concat(variables('factoryId'), '/linkedServices/SalesPersonStaging')]"
 			]
 		},
 		{

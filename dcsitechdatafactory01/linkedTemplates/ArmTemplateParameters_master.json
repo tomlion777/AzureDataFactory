@@ -14,6 +14,9 @@
 		"SqlServer1_connectionString": {
 			"value": ""
 		},
+		"SalesPersonStaging_connectionString": {
+			"value": ""
+		},
 		"containerUri": {
 			"value": ""
 		},
