@@ -2,7 +2,7 @@
 	"name": "SalesPersonStaging",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "LS_adventureworks2017",
+			"referenceName": "SalesPersonStaging",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
