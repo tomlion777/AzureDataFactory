@@ -1,0 +1,16 @@
+{
+	"name": "SalesPersonStaging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_adventureworks2017",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Sales",
+			"table": "Person"
+		}
+	}
+}

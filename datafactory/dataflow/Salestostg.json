@@ -1,0 +1,54 @@
+{
+	"name": "Salestostg",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SalesPerson",
+						"type": "DatasetReference"
+					},
+					"name": "SalesPerson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SalesPersonStaging",
+						"type": "DatasetReference"
+					},
+					"name": "Staging"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          BusinessEntityID as integer,",
+				"          TerritoryID as integer,",
+				"          SalesQuota as decimal(19,4),",
+				"          Bonus as decimal(19,4),",
+				"          CommissionPct as decimal(10,4),",
+				"          SalesYTD as decimal(19,4),",
+				"          SalesLastYear as decimal(19,4),",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select   a.*, (SELECT CurbusDt   FROM [AdventureWorks2017].[Sales].[businessPersonDC]\\nwhere RunID=(Select MAX(RunID) from [AdventureWorks2017].[Sales].[businessPersonDC])) AS ReportingDate\\nfrom [AdventureWorks2017].[Sales].[SalesPerson] a\\nWHERE a.ModifiedDate <= (SELECT CurbusDt   FROM [AdventureWorks2017].[Sales].[businessPersonDC]\\nwhere RunID=(Select MAX(RunID) from [AdventureWorks2017].[Sales].[businessPersonDC]))',",
+				"     format: 'query') ~> SalesPerson",
+				"SalesPerson sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Staging"
+			]
+		}
+	}
+}
