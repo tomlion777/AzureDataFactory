@@ -64,6 +64,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AW_Person')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -156,6 +169,99 @@
 				"typeProperties": {
 					"schema": "Person",
 					"table": "Output"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_adventureworks2017')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SalesPerson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_adventureworks2017",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "BusinessEntityID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TerritoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SalesQuota",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Bonus",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "CommissionPct",
+						"type": "smallmoney",
+						"precision": 10,
+						"scale": 4
+					},
+					{
+						"name": "SalesYTD",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "SalesLastYear",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "Sales",
+					"table": "SalesPerson"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_adventureworks2017')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SalesPersonStaging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_adventureworks2017",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "Sales",
+					"table": "Person"
 				}
 			},
 			"dependsOn": [
@@ -330,6 +436,66 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AW_Person')]",
 				"[concat(variables('factoryId'), '/datasets/PersonOutput')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Salestostg')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SalesPerson",
+								"type": "DatasetReference"
+							},
+							"name": "SalesPerson"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SalesPersonStaging",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          BusinessEntityID as integer,",
+						"          TerritoryID as integer,",
+						"          SalesQuota as decimal(19,4),",
+						"          Bonus as decimal(19,4),",
+						"          CommissionPct as decimal(10,4),",
+						"          SalesYTD as decimal(19,4),",
+						"          SalesLastYear as decimal(19,4),",
+						"          rowguid as string,",
+						"          ModifiedDate as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select   a.*, (SELECT CurbusDt   FROM [AdventureWorks2017].[Sales].[businessPersonDC]\\nwhere RunID=(Select MAX(RunID) from [AdventureWorks2017].[Sales].[businessPersonDC])) AS ReportingDate\\nfrom [AdventureWorks2017].[Sales].[SalesPerson] a\\nWHERE a.ModifiedDate <= (SELECT CurbusDt   FROM [AdventureWorks2017].[Sales].[businessPersonDC]\\nwhere RunID=(Select MAX(RunID) from [AdventureWorks2017].[Sales].[businessPersonDC]))',",
+						"     format: 'query') ~> SalesPerson",
+						"SalesPerson sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Staging"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SalesPerson')]",
+				"[concat(variables('factoryId'), '/datasets/SalesPersonStaging')]"
 			]
 		},
 		{
